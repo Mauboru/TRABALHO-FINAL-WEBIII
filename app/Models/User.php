@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Crypt;
 
 class User extends Authenticatable
 {
@@ -21,7 +22,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-    ];
+        // Campos Adicionados
+        'provider_name',
+        'provider_id',
+    ];        
 
     /**
      * The attributes that should be hidden for serialization.
@@ -31,7 +35,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-    ];
+        // Campo Adicionado
+        'provider_token'
+    ];  
 
     /**
      * Get the attributes that should be cast.
@@ -45,4 +51,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function setProviderTokenAttribute($value) {
+        return $this->attributes['provider_token'] = Crypt::crypt($value);
+    }
+    public function getProviderTokenAttribute($value) {
+        return Crypt::decrypt($value);
+    }       
 }
